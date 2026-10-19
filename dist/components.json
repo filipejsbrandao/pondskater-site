@@ -1,0 +1,1827 @@
+[
+  {
+    "name": "3DCP Velocity",
+    "nick": "3DCPSpeed",
+    "desc": "Compute the nozzle velocity for 3D concrete printing based on the material flow velocity, nozzle diameter, layer width and nozzle height. The analytical expressions were derived from (Alhussain et al., 2024) and tunned based on experimental data and regression analysis collected at the ARENA Lab of the School of Architecture Art and Design of the University of Minho.",
+    "group": "Paths",
+    "file": "3DCPSpeed.cs",
+    "inputs": [
+      {
+        "name": "Material Extrusion Velocity",
+        "nick": "Vm",
+        "desc": "The material extrusion velocity in millimeters per second (mm/s)",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Nozzle Diameter",
+        "nick": "D",
+        "desc": "The nozzle diameter in millimeters (mm)",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Filament Width",
+        "nick": "W",
+        "desc": "The filament width in millimeters (mm)",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Nozzle Height",
+        "nick": "Hn",
+        "desc": "The nozzle height in millimeters (mm). Nozzle height can be considered equal to filament height if the extrusion is kept with adequate bounds, roughly between 1.7 and 2.3 width ratios.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Nozzle Velocity",
+        "nick": "Vn",
+        "desc": "The nozzle velocity in meters per second (m/s)",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Contact Width",
+        "nick": "Wc",
+        "desc": "The contact width in millimeters (mm)",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Height Ratio",
+        "nick": "H*",
+        "desc": "The ratio between the Nozzle Heigth and the Nozzle Diameter",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Width Ratio",
+        "nick": "W*",
+        "desc": "The ratio between the Filament Width and Nozzle Diameter",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Bridge Cell Tree",
+    "nick": "CellTreeBridge",
+    "desc": "Joins planar cells with width corridors between their centroids using an indexed tree of cell neighbors.",
+    "group": "Paths",
+    "file": "BridgeCellTreeComponent.cs",
+    "inputs": [
+      {
+        "name": "Cells",
+        "nick": "C",
+        "desc": "Closed coplanar cell boundaries. Cell indices follow the input list order.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Neighbors",
+        "nick": "N",
+        "desc": "Neighbor indices for each cell. Branch {i} contains the indices connected to cell i.",
+        "type": "Integer",
+        "access": "tree",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Width",
+        "nick": "W",
+        "desc": "Total width of each centroid connection corridor.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Inset Cells",
+        "nick": "I",
+        "desc": "Inset every cell by half the corridor width before joining.",
+        "type": "Boolean",
+        "access": "item",
+        "default": "false",
+        "optional": false
+      },
+      {
+        "name": "Plane",
+        "nick": "Pl",
+        "desc": "Optional common working plane. When omitted, the plane is inferred from the first cell.",
+        "type": "Plane",
+        "access": "item",
+        "default": "",
+        "optional": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Boundaries",
+        "nick": "B",
+        "desc": "Closed boundaries produced by uniting the cells and centroid corridors.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Connections",
+        "nick": "L",
+        "desc": "Centroid-to-centroid connections represented by the validated tree.",
+        "type": "Line",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Bridge Cells",
+    "nick": "CellBridge",
+    "desc": "Joins planar cell boundaries with a corridor around an open polyline path to create a continuous closed toolpath.",
+    "group": "Paths",
+    "file": "BridgeCellsComponent.cs",
+    "inputs": [
+      {
+        "name": "Cells",
+        "nick": "C",
+        "desc": "Closed coplanar cell boundaries to join.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Path",
+        "nick": "P",
+        "desc": "Open polyline path crossing the cells in the order they are to be joined.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Width",
+        "nick": "W",
+        "desc": "Total width of the connecting corridor, or filament layer width.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Inset Cells",
+        "nick": "I",
+        "desc": "Inset every cell by half the corridor width (or half of the filament layer width) before joining.",
+        "type": "Boolean",
+        "access": "item",
+        "default": "false",
+        "optional": false
+      },
+      {
+        "name": "Plane",
+        "nick": "Pl",
+        "desc": "Optional common working plane. When omitted, the plane is inferred from the path.",
+        "type": "Plane",
+        "access": "item",
+        "default": "",
+        "optional": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Boundaries",
+        "nick": "B",
+        "desc": "Closed boundaries produced by uniting the cells and connecting corridor.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Edge Aligned Bounding Rectangle",
+    "nick": "EABR",
+    "desc": "Constructs the bounding rectangle of a planar polygon aligned to the direction of a selected input polyline edge. Bounding extents are computed from the polygon convex hull.",
+    "group": "Analysis",
+    "file": "EdgeAlignedBoundingRectangleComponent.cs",
+    "inputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "Closed planar polyline.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Plane",
+        "nick": "Pl",
+        "desc": "Reference plane of the polygon.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      },
+      {
+        "name": "Edge Index",
+        "nick": "E",
+        "desc": "Zero-based index of the input polyline edge whose direction is used to align the rectangle. The index refers to the cleaned input polyline order, not the convex hull edge order.",
+        "type": "Integer",
+        "access": "item",
+        "default": "0",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Rectangle",
+        "nick": "R",
+        "desc": "Edge-aligned bounding rectangle.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Area",
+        "nick": "A",
+        "desc": "Rectangle area.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Length",
+        "nick": "L",
+        "desc": "Rectangle length along the selected edge direction.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Width",
+        "nick": "W",
+        "desc": "Rectangle width perpendicular to the selected edge direction.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Convex Hull",
+        "nick": "C",
+        "desc": "Convex hull used to compute the rectangle extents.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Eulerian Path",
+    "nick": "E_Path",
+    "desc": "Finds an Eulerian path through a connected network of curves.",
+    "group": "Paths",
+    "file": "EulerianPath.cs",
+    "inputs": [
+      {
+        "name": "Curves",
+        "nick": "C",
+        "desc": "Connected curve network. Each curve is treated as one graph edge.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Start",
+        "nick": "S",
+        "desc": "Start point. The closest graph endpoint is used.",
+        "type": "Point",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Tolerance",
+        "nick": "T",
+        "desc": "Endpoint merge tolerance.",
+        "type": "Number",
+        "access": "item",
+        "default": "RhinoDoc.ActiveDoc?.ModelAbsoluteTolerance ?? 1e-6",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Path",
+        "nick": "P",
+        "desc": "Eulerian path curves, oriented in traversal order.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Exists",
+        "nick": "E",
+        "desc": "True when an Eulerian path exists from the selected start vertex.",
+        "type": "Boolean",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "3DCP Extrusion Profile",
+    "nick": "3DCPProfile",
+    "desc": "Creates a closed extrusion mesh with a rounded-rectangle bead profile along a toolpath.",
+    "group": "Paths",
+    "file": "ExtrusionProfileComponent.cs",
+    "inputs": [
+      {
+        "name": "Toolpath",
+        "nick": "C",
+        "desc": "Toolpath curve along which the extrusion profile is generated.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Layer Width",
+        "nick": "W",
+        "desc": "Extruded layer width in model units.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Layer Height",
+        "nick": "H",
+        "desc": "Extruded layer height in model units.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Sampling Distance",
+        "nick": "S",
+        "desc": "Approximate distance between mesh profile rings.",
+        "type": "Number",
+        "access": "item",
+        "default": "10.0",
+        "optional": false
+      },
+      {
+        "name": "Profile Tolerance",
+        "nick": "Tol",
+        "desc": "Maximum chord deviation used to discretize the profile and end caps.",
+        "type": "Number",
+        "access": "item",
+        "default": "0.1",
+        "optional": false
+      },
+      {
+        "name": "Fillet Radius",
+        "nick": "R",
+        "desc": "Toolpath corner fillet radius. Use zero for half the layer width.",
+        "type": "Number",
+        "access": "item",
+        "default": "0.0",
+        "optional": false
+      },
+      {
+        "name": "Printing Plane",
+        "nick": "P",
+        "desc": "Plane whose normal defines the printing vertical direction.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Mesh",
+        "nick": "M",
+        "desc": "Closed extrusion-profile mesh.",
+        "type": "Mesh",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Filleted Curve",
+        "nick": "FC",
+        "desc": "Toolpath curve after corner filleting.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Five-Segment Arch",
+    "nick": "5SegArch",
+    "desc": "Constructs a five-segment arch using Michal's radius-ratio method.",
+    "group": "Curves",
+    "file": "FiveSegmentArchComponent.cs",
+    "inputs": [
+      {
+        "name": "Span",
+        "nick": "S",
+        "desc": "Overall width of the arch.",
+        "type": "Number",
+        "access": "item",
+        "default": "10",
+        "optional": false
+      },
+      {
+        "name": "Rise",
+        "nick": "R",
+        "desc": "Vertical height from the spring line to the apex.",
+        "type": "Number",
+        "access": "item",
+        "default": "5",
+        "optional": false
+      },
+      {
+        "name": "Plane",
+        "nick": "P",
+        "desc": "Construction plane. Span follows its X axis and rise follows its Y axis.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Arch",
+        "nick": "A",
+        "desc": "Five-segment polycurve arch.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Arc Segments",
+        "nick": "AS",
+        "desc": "The five individual arc segments from left to right.",
+        "type": "Arc",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Centers",
+        "nick": "C",
+        "desc": "Centers of the five arc segments.",
+        "type": "Point",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Joints",
+        "nick": "J",
+        "desc": "Junction points between consecutive arc segments.",
+        "type": "Point",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Michal Ratio",
+        "nick": "MR",
+        "desc": "First-radius factor calculated by Michal's linear fit.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Apex",
+        "nick": "AP",
+        "desc": "Apex point of the arch.",
+        "type": "Point",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Hamiltonian Path",
+    "nick": "H_Path",
+    "desc": "Finds a Hamiltonian vertex path in a connected curve network. Uses exact dynamic programming for small graphs and beam search for larger graphs.",
+    "group": "Paths",
+    "file": "HamiltonianPath_Component.cs",
+    "inputs": [
+      {
+        "name": "Curves",
+        "nick": "C",
+        "desc": "Connected curve network. Curve endpoints define graph vertices.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Start",
+        "nick": "S",
+        "desc": "Start point. The closest graph vertex is used.",
+        "type": "Point",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Use Exact",
+        "nick": "E",
+        "desc": "If true, use exact dynamic programming up to 23 vertices, then fall back to beam search. If false, use beam search directly.",
+        "type": "Boolean",
+        "access": "item",
+        "default": "true",
+        "optional": false
+      },
+      {
+        "name": "Tolerance",
+        "nick": "T",
+        "desc": "Endpoint snap tolerance.",
+        "type": "Number",
+        "access": "item",
+        "default": "RhinoDoc.ActiveDoc?.ModelAbsoluteTolerance ?? 1e-6",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Points",
+        "nick": "Pt",
+        "desc": "Hamiltonian vertex order from start to end.",
+        "type": "Point",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Path",
+        "nick": "P",
+        "desc": "Polyline through the Hamiltonian vertex order.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Full",
+        "nick": "F",
+        "desc": "True if the returned path visits every vertex in the start component.",
+        "type": "Boolean",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Ice Ray Lattice",
+    "nick": "IceRay",
+    "desc": "Subdivides a convex planar polygon into smaller polygons using an iterative Ice Ray splitting strategy.",
+    "group": "Subdivision",
+    "file": "IceRayLatticeComponent.cs",
+    "inputs": [
+      {
+        "name": "Polygon",
+        "nick": "P",
+        "desc": "Closed convex planar polyline to subdivide.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Max Area",
+        "nick": "A",
+        "desc": "Maximum target area for each polygon.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Cut Ratio",
+        "nick": "R",
+        "desc": "Normalized cut range on each chosen side. Must satisfy 0 < R < 1.",
+        "type": "Number",
+        "access": "item",
+        "default": "0.6",
+        "optional": false
+      },
+      {
+        "name": "Side Ratio",
+        "nick": "S",
+        "desc": "Minimum side-length factor relative to average side length for a side to be eligible for splitting.",
+        "type": "Number",
+        "access": "item",
+        "default": "1.0",
+        "optional": false
+      },
+      {
+        "name": "Seed",
+        "nick": "Sd",
+        "desc": "Random seed.",
+        "type": "Integer",
+        "access": "item",
+        "default": "1",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Polygons",
+        "nick": "P",
+        "desc": "Subdivided polygons.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "L Component",
+    "nick": "LComp",
+    "desc": "Creates the closed polyline of an L corner connection from a construction plane, two arm directions, per-arm widths and per-arm minimum member lengths measured beyond the joint geometry.",
+    "group": "Subdivision",
+    "file": "LComponent.cs",
+    "inputs": [
+      {
+        "name": "Plane",
+        "nick": "P",
+        "desc": "Construction plane. Its origin defines the corner origin.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      },
+      {
+        "name": "Vector A",
+        "nick": "vA",
+        "desc": "First arm direction.",
+        "type": "Vector",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Vector B",
+        "nick": "vB",
+        "desc": "Second arm direction.",
+        "type": "Vector",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Widths",
+        "nick": "W",
+        "desc": "Per-arm widths. If fewer values are provided than arms, the last value is repeated.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Min Member Lengths",
+        "nick": "B",
+        "desc": "Per-arm minimum member lengths measured beyond the resolved joint. If fewer values are provided than arms, the last value is repeated.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "Closed L-component polyline.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Vertices",
+        "nick": "V",
+        "desc": "Polyline vertices in order.",
+        "type": "Point",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Metric Subdivision",
+    "nick": "MSub",
+    "desc": "Subdivides a length by maximizing the use of a preferred maximum module length while enforcing a minimum allowable remainder length.",
+    "group": "Subdivision",
+    "file": "MetricSubdivisionComponent.cs",
+    "inputs": [
+      {
+        "name": "Length",
+        "nick": "L",
+        "desc": "Total length to subdivide.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Max Length",
+        "nick": "Max",
+        "desc": "Preferred maximum module length.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Min Length",
+        "nick": "Min",
+        "desc": "Minimum acceptable remainder or end-segment length.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Centers",
+        "nick": "C",
+        "desc": "Segment center positions measured from zero.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Lengths",
+        "nick": "Ls",
+        "desc": "Segment lengths.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Count",
+        "nick": "N",
+        "desc": "Number of segments.",
+        "type": "Integer",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Minimum Bounding Rectangle",
+    "nick": "MBR",
+    "desc": "Constructs a robust minimum-area bounding rectangle for a planar polygon by evaluating all convex-hull edge-aligned candidates.",
+    "group": "Analysis",
+    "file": "MinimumBoundingRectangleComponent.cs",
+    "inputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "Closed planar polyline.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Plane",
+        "nick": "Pl",
+        "desc": "Reference plane of the polygon.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Rectangle",
+        "nick": "R",
+        "desc": "Minimum-area bounding rectangle.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Area",
+        "nick": "A",
+        "desc": "Rectangle area.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Length",
+        "nick": "L",
+        "desc": "Rectangle length along its local x-axis.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Width",
+        "nick": "W",
+        "desc": "Rectangle width along its local y-axis.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Frame",
+        "nick": "F",
+        "desc": "Rectangle local frame.",
+        "type": "Plane",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Convex Hull",
+        "nick": "C",
+        "desc": "Convex hull used in the computation.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Miter Component",
+    "nick": "Miter",
+    "desc": "Creates one closed polyline miter-joint component per wall direction from a construction plane, wall directions, arm lengths and widths.",
+    "group": "Subdivision",
+    "file": "MiterComponent.cs",
+    "inputs": [
+      {
+        "name": "Plane",
+        "nick": "P",
+        "desc": "Construction plane. Its origin defines the joint center.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      },
+      {
+        "name": "Vectors",
+        "nick": "V",
+        "desc": "Wall directions meeting at the joint.",
+        "type": "Vector",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Arm Lengths",
+        "nick": "B",
+        "desc": "Per-arm lengths. If fewer values are provided than vectors, the last value is repeated.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Widths",
+        "nick": "H",
+        "desc": "Per-arm widths. If fewer values are provided than vectors, the last value is repeated.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Min Angle",
+        "nick": "A",
+        "desc": "Minimum angular separation in degrees for distinct wall directions.",
+        "type": "Number",
+        "access": "item",
+        "default": "5.0",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Components",
+        "nick": "C",
+        "desc": "One closed miter component polyline per wall direction.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Leg Points",
+        "nick": "L",
+        "desc": "Center points at the end of each arm.",
+        "type": "Point",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "N Component",
+    "nick": "NComp",
+    "desc": "Creates the closed polyline of a multi-wall intersection component from a construction plane, wall directions, per-arm widths and per-arm minimum member lengths measured beyond the joint geometry.",
+    "group": "Subdivision",
+    "file": "NComponent.cs",
+    "inputs": [
+      {
+        "name": "Plane",
+        "nick": "P",
+        "desc": "Construction plane. Its origin defines the component center.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      },
+      {
+        "name": "Vectors",
+        "nick": "V",
+        "desc": "Wall directions meeting at the intersection.",
+        "type": "Vector",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Min Member Lengths",
+        "nick": "B",
+        "desc": "Per-arm minimum member lengths measured beyond the resolved joint. If fewer values are provided than directions, the last value is repeated.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Widths",
+        "nick": "W",
+        "desc": "Per-arm widths. If fewer values are provided than directions, the last value is repeated.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Min Angle",
+        "nick": "A",
+        "desc": "Minimum angular separation in degrees for distinct wall directions.",
+        "type": "Number",
+        "access": "item",
+        "default": "5.0",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "Closed N-component polyline.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Leg Points",
+        "nick": "C",
+        "desc": "Stub center points for each wall direction.",
+        "type": "Point",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Offset",
+    "nick": "O",
+    "desc": "Offset description",
+    "group": "Analysis",
+    "file": "Offset_Component.cs",
+    "inputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "A planar polyline",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Weights",
+        "nick": "W",
+        "desc": "A list of weights per edge, by default a constant weight of 1 is assumed for all sides. Weights can be understood as the cotangent of the roof angle.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": true
+      },
+      {
+        "name": "Plane",
+        "nick": "Pl",
+        "desc": "The plane on which the curve lies",
+        "type": "Plane",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Type",
+        "nick": "T",
+        "desc": "True for Multiplicative weights (edge speed = w) and false for Additive weights (edge speed = 1 + wa)",
+        "type": "Boolean",
+        "access": "item",
+        "default": "true",
+        "optional": false
+      },
+      {
+        "name": "Direction",
+        "nick": "D",
+        "desc": "Offset only inside - 0; offset only outside - 1; offset both sides - 2",
+        "type": "Integer",
+        "access": "item",
+        "default": "0",
+        "optional": false
+      },
+      {
+        "name": "Distances",
+        "nick": "Di",
+        "desc": "offset-spec = <one-block> [ ',' <one-block> [ ',' ... ] ]   one - block = < one - offset > ['+' < one - offset > ['+'... ]]  one - offset = [< cnt > '*'] < time >  examples: '0.01 + 3 * 0.025, 0.15' or '10 * 0.025' <cnt> an integer representing the amount of time an offset is repeated <time> a double or integer representing the distance between offsets",
+        "type": "Text",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Skeleton",
+        "nick": "Sk",
+        "desc": "The 2d skeleton of the provided polyline",
+        "type": "Line",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Offsets",
+        "nick": "O",
+        "desc": "The offsets",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Polygon Partition",
+    "nick": "PP",
+    "desc": "Divides a simple planar polygon into non-overlapping convex components using Bayazit's convex decomposition algorithm.",
+    "group": "Subdivision",
+    "file": "PolygonPartition.cs",
+    "inputs": [
+      {
+        "name": "Polygon",
+        "nick": "P",
+        "desc": "A simple non-self-intersecting planar polygon to partition.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Convex Polygons",
+        "nick": "CP",
+        "desc": "A list of non-overlapping convex subdivisions.",
+        "type": "Curve",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Polygon Width",
+    "nick": "PWidth",
+    "desc": "Computes the minimum width of a planar polygon from its convex hull and returns the two support lines for the best antipodal configuration.",
+    "group": "Analysis",
+    "file": "PolygonWidthComponent.cs",
+    "inputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "Closed planar polyline.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Plane",
+        "nick": "Pl",
+        "desc": "Reference plane of the polygon.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Width",
+        "nick": "W",
+        "desc": "Minimum polygon width.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Support A",
+        "nick": "A",
+        "desc": "Support line on one side of the minimum-width direction.",
+        "type": "Line",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Support B",
+        "nick": "B",
+        "desc": "Support line on the opposite side of the minimum-width direction.",
+        "type": "Line",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Convex Hull",
+        "nick": "C",
+        "desc": "Convex hull used in the computation.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Random Hamilton Path",
+    "nick": "RH_Path",
+    "desc": "Generates a random hamiltonian path from a seed zig-zag horizontal or vertical path by cutting and rotation parallel links",
+    "group": "Paths",
+    "file": "RandomHamilton__Component.cs",
+    "inputs": [
+      {
+        "name": "Columns",
+        "nick": "N",
+        "desc": "Number of columns",
+        "type": "Integer",
+        "access": "item",
+        "default": "100",
+        "optional": false
+      },
+      {
+        "name": "Rows",
+        "nick": "M",
+        "desc": "Number of rows",
+        "type": "Integer",
+        "access": "item",
+        "default": "10",
+        "optional": false
+      },
+      {
+        "name": "Steps",
+        "nick": "S",
+        "desc": "Number of randomization steps",
+        "type": "Integer",
+        "access": "item",
+        "default": "4",
+        "optional": false
+      },
+      {
+        "name": "Increment X",
+        "nick": "iX",
+        "desc": "Increment or decrement from the start point in the X direction. True for increment.",
+        "type": "Boolean",
+        "access": "item",
+        "default": "true",
+        "optional": false
+      },
+      {
+        "name": "Increment Y",
+        "nick": "iY",
+        "desc": "Increment or decrement from the start point in the Y direction. True for increment.",
+        "type": "Boolean",
+        "access": "item",
+        "default": "true",
+        "optional": false
+      },
+      {
+        "name": "Horizontal",
+        "nick": "H",
+        "desc": "Create the seed zig-zag path in the horizontal or vertical direction. True for horizontal.",
+        "type": "Boolean",
+        "access": "item",
+        "default": "true",
+        "optional": false
+      },
+      {
+        "name": "Seed",
+        "nick": "S",
+        "desc": "Seed for random value.",
+        "type": "Integer",
+        "access": "item",
+        "default": "2",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Path",
+        "nick": "P",
+        "desc": "The randomized hamiltonian path",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "GraphML To Polyline",
+    "nick": "GML",
+    "desc": "Convert a GraphML polyline to a Rhino Polyline",
+    "group": "Analysis",
+    "file": "ReadGraphml_Component.cs",
+    "inputs": [
+      {
+        "name": "Path",
+        "nick": "P",
+        "desc": "the path to the graphml file",
+        "type": "Text",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "The polyline",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Weigths",
+        "nick": "W",
+        "desc": "weights",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Roofer",
+    "nick": "Rf",
+    "desc": "Build a roof from a closed planar polygon",
+    "group": "Analysis",
+    "file": "RooferComponent.cs",
+    "inputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "A planar polyline",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Slopes",
+        "nick": "S",
+        "desc": "A list of slope values. Slope is the cotangent of the angle. Note that 0 slope is a vertical wall",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": true
+      },
+      {
+        "name": "Plane",
+        "nick": "Pl",
+        "desc": "The plane where the curve lies",
+        "type": "Plane",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Type",
+        "nick": "T",
+        "desc": "True for Multiplicative weights (edge speed = w) and false for Additive weights (edge speed = 1 + wa)",
+        "type": "Boolean",
+        "access": "item",
+        "default": "true",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Roof",
+        "nick": "R",
+        "desc": "A mesh with the roof shape",
+        "type": "Mesh",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Shift PolyCurve Seam",
+    "nick": "ShiftSeam",
+    "desc": "Snaps the seam of a closed polycurve to a kink and shifts it by a number of kinks.",
+    "group": "Curves",
+    "file": "ShiftPolyCurveSeamComponent.cs",
+    "inputs": [
+      {
+        "name": "PolyCurve",
+        "nick": "C",
+        "desc": "Closed polycurve whose seam will be shifted.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Steps",
+        "nick": "S",
+        "desc": "Kinks to move in curve direction. Zero snaps to the nearest kink.",
+        "type": "Integer",
+        "access": "item",
+        "default": "0",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "PolyCurve",
+        "nick": "C",
+        "desc": "Polycurve with its seam at the selected kink.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Seam",
+        "nick": "P",
+        "desc": "New seam point.",
+        "type": "Point",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Skeleton2d",
+    "nick": "Sk2d",
+    "desc": "Get the 2d skeleton of a planar polygon",
+    "group": "Analysis",
+    "file": "Skeleton2D_Component.cs",
+    "inputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "A planar polyline",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Weights",
+        "nick": "W",
+        "desc": " list of weights per edge, by default a constant weight of 1 is assumed for all sides. Weights can be understood as the cotangent of the roof angle.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": true
+      },
+      {
+        "name": "Type",
+        "nick": "T",
+        "desc": "True for Multiplicative weights (edge speed = w) and false for Additive weights (edge speed = 1 + wa)",
+        "type": "Boolean",
+        "access": "item",
+        "default": "true",
+        "optional": false
+      },
+      {
+        "name": "Direction",
+        "nick": "D",
+        "desc": "Skeleton side selection: inside = 0, outside = 1, both = 2",
+        "type": "Integer",
+        "access": "item",
+        "default": "0",
+        "optional": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Skeleton",
+        "nick": "Sk",
+        "desc": "The 2d skeleton of the provided polyline",
+        "type": "Line",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Ipe output",
+        "nick": "IO",
+        "desc": "The command result in ipe format",
+        "type": "Text",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Symmetric Subdivision",
+    "nick": "SSub",
+    "desc": "Subdivides a length by maximizing the use of a preferred maximum module length while distributing the remainder symmetrically to both ends.",
+    "group": "Subdivision",
+    "file": "SymmetricSubdivisionComponent.cs",
+    "inputs": [
+      {
+        "name": "Length",
+        "nick": "L",
+        "desc": "Total length to subdivide.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Max Length",
+        "nick": "Max",
+        "desc": "Preferred maximum module length.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Min Length",
+        "nick": "Min",
+        "desc": "Minimum acceptable end-segment length.",
+        "type": "Number",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Centers",
+        "nick": "C",
+        "desc": "Segment center positions measured from zero.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Lengths",
+        "nick": "Ls",
+        "desc": "Segment lengths.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Count",
+        "nick": "N",
+        "desc": "Number of segments.",
+        "type": "Integer",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "T Component",
+    "nick": "TComp",
+    "desc": "Creates the closed polyline of a T corner connection from a construction plane, three arm directions, per-arm widths and per-arm minimum member lengths measured beyond the joint geometry.",
+    "group": "Subdivision",
+    "file": "TComponent.cs",
+    "inputs": [
+      {
+        "name": "Plane",
+        "nick": "P",
+        "desc": "Construction plane. Its origin defines the component center.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      },
+      {
+        "name": "Vector A",
+        "nick": "vA",
+        "desc": "First arm direction.",
+        "type": "Vector",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Vector B",
+        "nick": "vB",
+        "desc": "Second arm direction.",
+        "type": "Vector",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Vector C",
+        "nick": "vC",
+        "desc": "Third arm direction.",
+        "type": "Vector",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Widths",
+        "nick": "W",
+        "desc": "Per-arm widths. If fewer values are provided than arms, the last value is repeated.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Min Member Lengths",
+        "nick": "B",
+        "desc": "Per-arm minimum member lengths measured beyond the resolved joint. If fewer values are provided than arms, the last value is repeated.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "Closed T-component polyline.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Vertices",
+        "nick": "V",
+        "desc": "Polyline vertices in order.",
+        "type": "Point",
+        "access": "list",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Three-Segment Arch",
+    "nick": "3SegArch",
+    "desc": "Constructs a three-segment arch from a span, a rise, and a construction plane.",
+    "group": "Curves",
+    "file": "ThreeSegmentArchComponent.cs",
+    "inputs": [
+      {
+        "name": "Span",
+        "nick": "S",
+        "desc": "Overall width of the arch.",
+        "type": "Number",
+        "access": "item",
+        "default": "10.0",
+        "optional": false
+      },
+      {
+        "name": "Rise",
+        "nick": "R",
+        "desc": "Vertical height from the spring line to the apex.",
+        "type": "Number",
+        "access": "item",
+        "default": "3.0",
+        "optional": false
+      },
+      {
+        "name": "Plane",
+        "nick": "P",
+        "desc": "Construction plane. Span follows the X axis and rise follows the Y axis.",
+        "type": "Plane",
+        "access": "item",
+        "default": "Plane.WorldXY",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Arch",
+        "nick": "A",
+        "desc": "Three-segment polycurve arch.",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Arc Segments",
+        "nick": "AS",
+        "desc": "The three individual arc segments from left to right.",
+        "type": "Arc",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Centers",
+        "nick": "C",
+        "desc": "Centers of the three arc segments.",
+        "type": "Point",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Joints",
+        "nick": "J",
+        "desc": "Spring points and junction points between consecutive arc segments.",
+        "type": "Point",
+        "access": "list",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Apex",
+        "nick": "AP",
+        "desc": "Apex point of the arch.",
+        "type": "Point",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Write GraphML",
+    "nick": "Write GML",
+    "desc": "Write GraphML files",
+    "group": "Analysis",
+    "file": "WriteGraphml_Component.cs",
+    "inputs": [
+      {
+        "name": "Polyline",
+        "nick": "P",
+        "desc": "A polyline",
+        "type": "Curve",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Weights",
+        "nick": "W",
+        "desc": "A list of weights per edge, by default a constant weight of 1 is assumed for all sides. Weights can be understood as the cotangent of the roof angle.",
+        "type": "Number",
+        "access": "list",
+        "default": "",
+        "optional": true
+      },
+      {
+        "name": "Type",
+        "nick": "T",
+        "desc": "True for Multiplicative weights (edge speed = w) and false for Additive weights (edge speed = 1 + wa)",
+        "type": "Boolean",
+        "access": "item",
+        "default": "true",
+        "optional": false
+      },
+      {
+        "name": "Dir",
+        "nick": "D",
+        "desc": "path to save the file",
+        "type": "Text",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Filename",
+        "nick": "F",
+        "desc": "the filename",
+        "type": "Text",
+        "access": "item",
+        "default": "",
+        "optional": false
+      },
+      {
+        "name": "Save",
+        "nick": "S",
+        "desc": "Save the file",
+        "type": "Boolean",
+        "access": "item",
+        "default": "false",
+        "optional": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Xml",
+        "nick": "X",
+        "desc": "a string with the graphml",
+        "type": "Text",
+        "access": "item",
+        "default": "",
+        "optional": false
+      }
+    ]
+  }
+]
