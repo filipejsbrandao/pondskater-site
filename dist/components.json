@@ -80,7 +80,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/3dcp.png"
   },
   {
     "name": "Bridge Cell Tree",
@@ -154,7 +155,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/BridgeCellTree.png"
   },
   {
     "name": "Bridge Cells",
@@ -219,7 +221,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/BridgeCell.png"
   },
   {
     "name": "Edge Aligned Bounding Rectangle",
@@ -302,7 +305,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/EdgeAligned.png"
   },
   {
     "name": "Eulerian Path",
@@ -358,7 +362,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/Eulerian.png"
   },
   {
     "name": "3DCP Extrusion Profile",
@@ -450,7 +455,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/3dcp.png"
   },
   {
     "name": "Five-Segment Arch",
@@ -542,7 +548,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/5Arch.png"
   },
   {
     "name": "Hamiltonian Path",
@@ -616,7 +623,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/Hamiltonian.png"
   },
   {
     "name": "Ice Ray Lattice",
@@ -681,7 +689,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/IceRay.png"
   },
   {
     "name": "L Component",
@@ -755,7 +764,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/L_Component.png"
   },
   {
     "name": "Metric Subdivision",
@@ -820,7 +830,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/Metric.png"
   },
   {
     "name": "Minimum Bounding Rectangle",
@@ -903,7 +914,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/MBR.png"
   },
   {
     "name": "Miter Component",
@@ -977,7 +989,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/Mitter_Component.png"
   },
   {
     "name": "N Component",
@@ -1051,7 +1064,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/N_Component.png"
   },
   {
     "name": "Offset",
@@ -1134,7 +1148,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/Offset.png"
   },
   {
     "name": "Polygon Partition",
@@ -1163,7 +1178,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/pondskater.png"
   },
   {
     "name": "Polygon Width",
@@ -1228,7 +1244,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/PolygonWidth.png"
   },
   {
     "name": "Random Hamilton Path",
@@ -1311,7 +1328,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/RandomHamilton.png"
   },
   {
     "name": "GraphML To Polyline",
@@ -1349,7 +1367,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/ReadGML.png"
   },
   {
     "name": "Roofer",
@@ -1405,7 +1424,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/roofer.png"
   },
   {
     "name": "Shift PolyCurve Seam",
@@ -1452,7 +1472,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/ShiftSeam.png"
   },
   {
     "name": "Skeleton2d",
@@ -1517,7 +1538,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/skeleton2d.png"
   },
   {
     "name": "Symmetric Subdivision",
@@ -1582,7 +1604,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/Symmetrical.png"
   },
   {
     "name": "T Component",
@@ -1665,7 +1688,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/T_Component.png"
   },
   {
     "name": "Three-Segment Arch",
@@ -1748,7 +1772,8 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/3Arch.png"
   },
   {
     "name": "Write GraphML",
@@ -1822,6 +1847,7 @@
         "default": "",
         "optional": false
       }
-    ]
+    ],
+    "icon": "icons/WriteGML.png"
   }
 ]
