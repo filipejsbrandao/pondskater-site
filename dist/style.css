@@ -4,3 +4,5 @@
 .brand-icon{width:36px;height:36px;object-fit:contain;flex-shrink:0}.badge{width:54px;min-width:54px;background:transparent}.badge img{width:32px;height:32px;object-fit:contain}footer .brand-icon{width:30px;height:30px}
 
 .catalog{display:block}.category-group{margin-top:32px}.category-group>h3{font-size:22px;letter-spacing:-.5px;padding-bottom:12px;border-bottom:1px solid var(--line)}.category-components{display:grid;grid-template-columns:1fr 1fr;gap:0 30px}.languages{display:flex;gap:10px;border-left:1px solid var(--line);padding-left:15px}.languages [aria-current]{font-weight:700;text-decoration:underline;text-underline-offset:4px}@media(max-width:750px){.category-components{grid-template-columns:1fr}header{flex-wrap:wrap;gap:12px}nav{flex-wrap:wrap;gap:12px}}
+
+.installation{border-top:1px solid var(--line);padding:60px 0}.installation .examples article:first-child{border-color:#80adbf}.installation .examples article>p{font-size:13px;color:var(--muted)}
