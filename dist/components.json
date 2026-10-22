@@ -953,7 +953,7 @@
       },
       {
         "name": "Widths",
-        "nick": "H",
+        "nick": "W",
         "desc": "Per-arm widths. If fewer values are provided than vectors, the last value is repeated.",
         "type": "Number",
         "access": "list",
